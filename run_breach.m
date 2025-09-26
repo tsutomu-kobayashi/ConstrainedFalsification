@@ -7,7 +7,7 @@ function [] = run_breach()
     InitBreach;
 
     BSPowerApp = BreachSystem('powerApp', ...                % system name
-                              {'dod'}, ...                   % signals
+                              {'result'}, ...                   % signals
                               {'start', 'duty'}, ... % parameters
                               [45, 10], ...                 % default values for parameters
                               @run_py_power_app);
