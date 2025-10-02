@@ -12,9 +12,10 @@ function [] = run_breach()
                               [45, 10], ...                 % default values for parameters
                               @run_py_power_app);
 
-    BSPowerApp.SetParamRanges({'start', 'duty'}, [0 100; 0 100]); % 10 70; 3 10
+    BSPowerApp.SetDomain('start', 'int', [0 100]);
+    BSPowerApp.SetDomain('duty', 'int', [0 100]);
+    %BSPowerApp.SetParamRanges({'start', 'duty'}, [0 100; 0 100]); % 10 70; 3 10
     phi = STL_Formula('phi', 'alw (result[t] <= 21)');
-    req = BreachRequirement(phi);
 
     % Constrained falsification
     addpath('/tmp/ConstrainedFalsification/src');
