@@ -1,4 +1,5 @@
-function [] = run_breach()
+function [] = run_constrained_falsification()
+    %clear; close all;
     if pyenv().Version == ""
         pyenv(Version='/tmp/miniconda3/envs/py311/bin/python');
     end
@@ -10,13 +11,22 @@ function [] = run_breach()
                               {'start', 'duty'}, ... % parameters
                               [45, 10], ...                 % default values for parameters
                               @run_py_power_app);
+
+    BSPowerApp.SetDomain('start', 'int', [0 100]);
+    BSPowerApp.SetDomain('duty', 'int', [0 100]);
+    %BSPowerApp.SetParamRanges({'start', 'duty'}, [0 100; 0 100]); % 10 70; 3 10
     phi = STL_Formula('phi', 'alw (result[t] <= 21)');
 
-    falsif_pb = FalsificationProblem(BSPowerApp,phi,{'start','duty'},[0 100; 0 100]);
+    % Constrained falsification
+    addpath('/tmp/ConstrainedFalsification/src');
+    consfile = '/tmp/ConstrainedFalsification/src/constr/satcons1';
+    cons = parse(consfile);
+    S_str = '12';
+    S = [1 2];
+    algorithm = 'Breach';
+    falsif_pb = PracticalFP_Single(BSPowerApp,phi,cons,S);
+    falsif_pb.setup_solver('cmaes');
     falsif_pb.solve();
-
-    BSPowerApp_false = falsif_pb.GetBrSet_False();
-    BSPowerApp_false.PlotSignals();
 end
 
 function [t_out,X,p,status] = run_py_power_app(Sys, t_in, p)
